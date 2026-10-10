@@ -1,0 +1,528 @@
+/* ==============================
+   全体
+============================== */
+
+body {
+    font-family: sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #f5f7fa;
+    color: #222;
+}
+
+
+/* ==============================
+   タイトル
+============================== */
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+
+/* ==============================
+   検索・絞り込み
+============================== */
+
+.search-area {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#search-input,
+#category-select,
+#sort-select,
+#status-select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+}
+
+#category-select,
+#sort-select,
+#status-select {
+    margin-top: 10px;
+}
+
+#search-input:focus,
+#category-select:focus,
+#sort-select:focus,
+#status-select:focus {
+    outline: none;
+    border-color: #5b7cfa;
+    box-shadow: 0 0 0 3px rgba(91, 124, 250, 0.12);
+}
+
+
+/* ==============================
+   新規用語追加ボタン
+============================== */
+
+#add-term-button {
+    margin-bottom: 20px;
+    padding: 11px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #222;
+    color: white;
+}
+
+#add-term-button:hover {
+    opacity: 0.85;
+}
+
+
+/* ==============================
+   用語一覧
+============================== */
+
+.term-list {
+    display: grid;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+
+/* ==============================
+   用語カード
+============================== */
+
+.term-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.term-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+
+/* ==============================
+   用語名
+============================== */
+
+.term-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+/* ==============================
+   分野
+============================== */
+
+.category {
+    display: inline-block;
+
+    margin-top: 8px;
+
+    padding: 5px 11px;
+
+    border-radius: 20px;
+
+    background-color: #e8eef7;
+
+    font-size: 13px;
+}
+
+
+/* ==============================
+   用語詳細
+============================== */
+
+.term-detail {
+    background-color: white;
+
+    padding: 30px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.term-detail h2 {
+    margin-top: 20px;
+}
+
+.term-detail h3 {
+    margin-top: 30px;
+
+    border-bottom: 1px solid #ddd;
+
+    padding-bottom: 8px;
+}
+
+.term-detail h3:first-of-type {
+    margin-top: 25px;
+}
+
+
+/* ==============================
+   戻るボタン
+============================== */
+
+#back-button {
+    padding: 8px 14px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    background-color: #eee;
+}
+
+#back-button:hover {
+    background-color: #ddd;
+}
+
+
+/* ==============================
+   入力欄
+============================== */
+
+.term-detail input,
+#reference-input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    font-size: 16px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    margin-bottom: 10px;
+}
+
+
+/* ==============================
+   メモ
+============================== */
+
+.term-detail textarea {
+    width: 100%;
+
+    min-height: 150px;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    font-size: 16px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    resize: vertical;
+}
+
+
+/* ==============================
+   保存ボタン
+============================== */
+
+#save-button,
+#register-button,
+#update-button {
+    margin-top: 20px;
+
+    padding: 12px 24px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    background-color: #222;
+
+    color: white;
+}
+
+#save-button:hover,
+#register-button:hover,
+#update-button:hover {
+    opacity: 0.85;
+}
+
+
+/* ==============================
+   編集・削除
+============================== */
+
+#edit-button {
+    margin-top: 20px;
+
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    background-color: #eee;
+}
+
+#edit-button:hover {
+    background-color: #ddd;
+}
+
+
+#delete-button {
+    margin-top: 20px;
+
+    margin-left: 10px;
+
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    background-color: #eee;
+}
+
+#delete-button:hover {
+    background-color: #ddd;
+}
+
+/* ==============================
+   学習進捗
+============================== */
+
+#learning-progress {
+    background-color: white;
+    padding: 20px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+#learning-progress h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.progress-item {
+    padding: 12px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.progress-item span {
+    display: block;
+    font-size: 13px;
+    color: #666;
+}
+
+.progress-item strong {
+    display: block;
+    margin-top: 5px;
+    font-size: 22px;
+}
+
+#progress-percent {
+    margin-bottom: 0;
+    font-weight: bold;
+}
+
+/* ==============================
+   学習進捗バー
+============================== */
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    margin-top: 10px;
+    background-color: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* ==============================
+   学習状況
+============================== */
+
+.learning-status {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* ==============================
+   学習進捗エリア
+============================== */
+
+.progress-area {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.progress-area h2 {
+    margin-bottom: 15px;
+}
+
+
+/* 進捗カード */
+
+.progress-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+
+/* 個別カード */
+
+.progress-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* 数字 */
+
+.progress-card .count {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+/* ラベル */
+
+.progress-card .label {
+    font-size: 13px;
+    color: #666;
+}
+
+
+/* 進捗率 */
+
+.progress-percent {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+
+/* プログレスバー */
+
+.progress-bar {
+    width: 100%;
+    height: 14px;
+    background-color: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+
+/* 進捗バー */
+
+#progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+
+/* スマホ対応 */
+
+@media (max-width: 600px) {
+
+    .progress-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+/* ==============================
+   詳細画面：学習状況
+============================== */
+
+#term-status-select {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 13px 15px;
+
+    font-size: 16px;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    background-color: white;
+
+    cursor: pointer;
+
+    margin-bottom: 10px;
+}
+
+
+#term-status-select:focus {
+    outline: none;
+    border-color: #888;
+}

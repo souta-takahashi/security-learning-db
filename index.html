@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>セキュリティ学習DB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>🔐 セキュリティ学習DB</h1>
+
+    <p class="subtitle">
+        セキュリティマネジメント試験の学習記録
+    </p>
+
+    <h2>用語一覧</h2>
+
+      <div class="progress-area">
+
+    <h2>学習進捗</h2>
+
+    <div class="progress-summary">
+
+        <div class="progress-card">
+            <span class="count" id="total-count">0</span>
+            <span class="label">全用語</span>
+        </div>
+
+        <div class="progress-card">
+            <span class="count" id="not-started-count">0</span>
+            <span class="label">未学習</span>
+        </div>
+
+        <div class="progress-card">
+            <span class="count" id="learning-count">0</span>
+            <span class="label">学習中</span>
+        </div>
+
+        <div class="progress-card">
+            <span class="count" id="completed-count">0</span>
+            <span class="label">理解済み</span>
+        </div>
+
+    </div>
+
+    <p id="progress-percent" class="progress-percent">
+        理解済み：0%
+    </p>
+
+    <div class="progress-bar">
+        <div id="progress-bar-fill"></div>
+    </div>
+
+</div>
+
+    <button id="add-term-button">
+        ＋ 新しい用語を追加
+    </button>
+
+    <div class="search-area">
+
+        <input type="text" id="search-input" placeholder="用語を検索...">
+
+        <select id="category-select">
+            <option value="all">すべての分野</option>
+        </select>
+
+        <select id="sort-select">
+            <option value="reading">五十音順</option>
+            <option value="alphabet">A-Z順</option>
+        </select>
+
+        <select id="status-select">
+            <option value="all">すべての学習状況</option>
+            <option value="未学習">未学習</option>
+            <option value="学習中">学習中</option>
+            <option value="理解済み">理解済み</option>
+        </select>
+    </div>
+
+    <div id="term-list" class="term-list"></div>
+
+    <script src="terms.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
