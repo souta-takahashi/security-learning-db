@@ -15,48 +15,111 @@
         セキュリティマネジメント試験の学習記録
     </p>
 
-    <h2>用語一覧</h2>
+    <div class="progress-area">
 
-      <div class="progress-area">
+        <h2>学習進捗</h2>
 
-    <h2>学習進捗</h2>
+        <div class="progress-summary">
 
-    <div class="progress-summary">
+            <div class="progress-card">
+                <span class="count" id="total-count">0</span>
+                <span class="label">全用語</span>
+            </div>
 
-        <div class="progress-card">
-            <span class="count" id="total-count">0</span>
-            <span class="label">全用語</span>
+            <div class="progress-card">
+                <span class="count" id="not-started-count">0</span>
+                <span class="label">未学習</span>
+            </div>
+
+            <div class="progress-card">
+                <span class="count" id="learning-count">0</span>
+                <span class="label">学習中</span>
+            </div>
+
+            <div class="progress-card">
+                <span class="count" id="completed-count">0</span>
+                <span class="label">理解済み</span>
+            </div>
+
         </div>
 
-        <div class="progress-card">
-            <span class="count" id="not-started-count">0</span>
-            <span class="label">未学習</span>
+        <p id="progress-percent" class="progress-percent">
+            理解済み：0%
+        </p>
+
+        <div class="progress-bar">
+            <div id="progress-bar-fill"></div>
         </div>
 
-        <div class="progress-card">
-            <span class="count" id="learning-count">0</span>
-            <span class="label">学習中</span>
+        <section id="study-history-section">
+    <h2>📅 学習記録</h2>
+
+    <div class="study-stats">
+        <div class="study-stat-card">
+            <span class="study-stat-label">連続学習日数</span>
+            <strong id="study-streak">0日</strong>
         </div>
 
-        <div class="progress-card">
-            <span class="count" id="completed-count">0</span>
-            <span class="label">理解済み</span>
+        <div class="study-stat-card">
+            <span class="study-stat-label">累計学習日数</span>
+            <strong id="study-total-days">0日</strong>
         </div>
-
     </div>
 
-    <p id="progress-percent" class="progress-percent">
-        理解済み：0%
-    </p>
+    <button id="record-study-button" type="button">
+        ✅ 今日の学習を記録
+    </button>
 
-    <div class="progress-bar">
-        <div id="progress-bar-fill"></div>
-    </div>
+    <p id="study-record-message" aria-live="polite"></p>
 
+    <h3>直近7日間の学習履歴</h3>
+    <div id="study-history-calendar" class="study-history-calendar"></div>
+</section>
+
+<div class="learning-summary-item">
+    <span class="summary-label">復習対象</span>
+    <span class="summary-count" id="summary-review">0</span>
 </div>
 
-    <button id="add-term-button">
-        ＋ 新しい用語を追加
+        <div class="learning-summary">
+            <div class="learning-summary-item">
+                <span class="summary-label">未学習</span>
+                <span class="summary-count" id="summary-not-started">0</span>
+            </div>
+
+            <div class="learning-summary-item">
+                <span class="summary-label">学習中</span>
+                <span class="summary-count" id="summary-learning">0</span>
+            </div>
+
+            <div class="learning-summary-item">
+                <span class="summary-label">理解済み</span>
+                <span class="summary-count" id="summary-completed">0</span>
+            </div>
+        </div>
+
+    </div>
+
+    <h2>用語一覧</h2>
+
+    <div class="action-buttons">
+        <button id="add-term-button">
+            ＋ 新しい用語を追加
+        </button>
+
+        <button id="backup-button">
+            ↓ 学習データをバックアップ
+        </button>
+
+        <button id="restore-button">
+            ↑ 学習データを復元
+        </button>
+
+        <input type="file" id="backup-file" accept=".json,application/json" hidden>
+    </div>
+
+    <button id="review-mode-button" type="button">
+        復習モード：OFF
     </button>
 
     <div class="search-area">

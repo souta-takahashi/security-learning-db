@@ -4,6 +4,41 @@ const categorySelect = document.getElementById("category-select");
 const sortSelect = document.getElementById("sort-select");
 const statusSelect = document.getElementById("status-select");
 const addTermButton = document.getElementById("add-term-button");
+const backupButton = document.getElementById("backup-button");
+const restoreButton = document.getElementById("restore-button");
+const backupFile = document.getElementById("backup-file");
+const reviewModeButton = document.getElementById("review-mode-button");
+const recordStudyButton = document.getElementById("record-study-button");
+const studyStreakElement = document.getElementById("study-streak");
+const studyTotalDaysElement = document.getElementById("study-total-days");
+const studyHistoryCalendar = document.getElementById("study-history-calendar");
+const studyRecordMessage = document.getElementById("study-record-message");
+
+// LocalStorageから学習履歴を読み込む
+let studyHistory = [];
+
+try {
+    const savedHistory = JSON.parse(
+        localStorage.getItem("securityStudyHistory") || "[]"
+    );
+
+    if (
+        Array.isArray(savedHistory) &&
+        savedHistory.every(date =>
+            typeof date === "string" &&
+            /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+            !Number.isNaN(Date.parse(date + "T00:00:00Z")) &&
+            new Date(date + "T00:00:00Z").toISOString().slice(0, 10) === date
+        )
+    ) {
+        studyHistory = [...new Set(savedHistory)].sort();
+    }
+} catch (error) {
+    console.error("学習履歴を読み込めませんでした。", error);
+}
+
+// 復習モードの状態
+let reviewModeEnabled = false;
 
 // ==============================
 // 保存した学習データを読み込む
@@ -92,15 +127,20 @@ function displayTerms(termData) {
             term.description;
 
 
-        // 学習状況
-        const status =
-            document.createElement("div");
+        const status = document.createElement("div");
+        const currentStatus = term.status || "未学習";
 
-        status.className =
-            "learning-status";
+        status.className = "learning-status";
 
-        status.textContent =
-            term.status || "未学習";
+        if (currentStatus === "未学習") {
+            status.classList.add("status-not-started");
+        } else if (currentStatus === "学習中") {
+            status.classList.add("status-learning");
+        } else if (currentStatus === "理解済み") {
+            status.classList.add("status-completed");
+        }
+
+        status.textContent = currentStatus;
 
 
         // カードに追加
@@ -149,6 +189,9 @@ function updateLearningProgress() {
             term => term.status === "理解済み"
         ).length;
 
+    const reviewCount = notStarted + learning;
+
+    document.getElementById("summary-review").textContent = reviewCount;
 
     document.getElementById("total-count").textContent =
         total;
@@ -162,6 +205,9 @@ function updateLearningProgress() {
     document.getElementById("completed-count").textContent =
         completed;
 
+    document.getElementById("summary-not-started").textContent = notStarted;
+    document.getElementById("summary-learning").textContent = learning;
+    document.getElementById("summary-completed").textContent = completed;
 
     const percent =
         total === 0
@@ -207,9 +253,12 @@ function filterAndSortTerms() {
             selectedCategory === "all" ||
             term.category === selectedCategory;
 
-        const matchesStatus =
-            selectedStatus === "all" ||
-            term.status === selectedStatus;
+        const matchesStatus = reviewModeEnabled
+            ? (term.status || "未学習") !== "理解済み"
+            : (
+                selectedStatus === "all" ||
+                term.status === selectedStatus
+            );
 
         return (
             matchesKeyword &&
@@ -787,6 +836,203 @@ function showAddTermForm() {
         });
 }
 
+
+function exportLearningData() {
+    const backupData = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        terms: terms,
+        memos: savedMemos,
+        studyHistory: studyHistory
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(backupData, null, 2)],
+        { type: "application/json;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "security-learning-backup.json";
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+function restoreLearningData(file) {
+    if (!file) return;
+
+    // 大きすぎるファイルを拒否
+    if (file.size > 5 * 1024 * 1024) {
+        alert("ファイルが大きすぎます。5MB以下のJSONを選択してください。");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        try {
+            const data = JSON.parse(reader.result);
+            const restoredHistory = data.studyHistory ?? [];
+
+            if (
+                !Array.isArray(restoredHistory) ||
+                !restoredHistory.every(date =>
+                    typeof date === "string" &&
+                    /^\d{4}-\d{2}-\d{2}$/.test(date) &&
+                    !Number.isNaN(Date.parse(date + "T00:00:00Z")) &&
+                    new Date(date + "T00:00:00Z").toISOString().slice(0, 10) === date
+                )
+            ) {
+                throw new Error("学習履歴の形式が正しくありません。");
+            }
+            // バックアップ形式を確認
+            if (
+                !data ||
+                !Array.isArray(data.terms) ||
+                !data.memos ||
+                typeof data.memos !== "object" ||
+                Array.isArray(data.memos)
+            ) {
+                throw new Error("バックアップ形式が正しくありません。");
+            }
+
+            // 用語データの内容を確認
+            const validStatuses = ["未学習", "学習中", "理解済み"];
+
+            const validTerms = data.terms.every(term =>
+                term &&
+                typeof term.name === "string" &&
+                typeof term.reading === "string" &&
+                typeof term.category === "string" &&
+                typeof term.description === "string" &&
+                (
+                    term.status === undefined ||
+                    validStatuses.includes(term.status)
+                ) &&
+                (
+                    term.relatedTerms === undefined ||
+                    (
+                        Array.isArray(term.relatedTerms) &&
+                        term.relatedTerms.every(item => typeof item === "string")
+                    )
+                )
+            );
+
+            if (!validTerms) {
+                throw new Error("用語データに不正な項目があります。");
+            }
+
+            if (!confirm(
+                "現在の学習データをバックアップの内容で置き換えます。先に現在のデータをバックアップしましたか？"
+            )) {
+                return;
+            }
+
+            // 既存データをバックアップ内容に置き換える
+            localStorage.setItem(
+                "securityTerms",
+                JSON.stringify(data.terms)
+            );
+
+            localStorage.setItem(
+                "securityMemos",
+                JSON.stringify(data.memos)
+            );
+
+            localStorage.setItem(
+                "securityStudyHistory",
+                JSON.stringify([...new Set(restoredHistory)].sort())
+            );
+
+            alert("復元しました。ページを再読み込みします。");
+            location.reload();
+
+        } catch (error) {
+            alert(
+                "復元できませんでした。正しいバックアップJSONか確認してください。\n" +
+                error.message
+            );
+        }
+    };
+
+    reader.onerror = () => {
+        alert("ファイルを読み込めませんでした。");
+    };
+
+    reader.readAsText(file);
+}
+
+function getLocalDateString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function updateStudyHistory() {
+    const today = getLocalDateString();
+    const studiedDates = new Set(studyHistory);
+
+    // 連続学習日数を計算する
+    // 今日まだ記録していない場合は、昨日までの連続日数を表示する
+    let checkDate = new Date();
+    if (!studiedDates.has(today)) {
+        checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    let streak = 0;
+
+    while (studiedDates.has(getLocalDateString(checkDate))) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    studyStreakElement.textContent = `${streak}日`;
+    studyTotalDaysElement.textContent = `${studyHistory.length}日`;
+
+    // 今日すでに記録済みならボタンを変更する
+    const recordedToday = studiedDates.has(today);
+
+    recordStudyButton.disabled = recordedToday;
+    recordStudyButton.textContent = recordedToday
+        ? "✓ 今日の学習は記録済みです"
+        : "✅ 今日の学習を記録";
+
+    // 直近7日間を表示する
+    studyHistoryCalendar.replaceChildren();
+
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setHours(12, 0, 0, 0);
+        date.setDate(date.getDate() - i);
+
+        const dateString = getLocalDateString(date);
+        const dayElement = document.createElement("div");
+        const label = document.createElement("span");
+        const mark = document.createElement("strong");
+
+        dayElement.className = "study-day";
+
+        if (studiedDates.has(dateString)) {
+            dayElement.classList.add("studied");
+        }
+
+        if (dateString === today) {
+            dayElement.classList.add("today");
+        }
+
+        label.textContent = `${date.getMonth() + 1}/${date.getDate()}`;
+        mark.textContent = studiedDates.has(dateString) ? "✓" : "—";
+
+        dayElement.append(label, mark);
+        studyHistoryCalendar.appendChild(dayElement);
+    }
+}
+
 // ==============================
 // ページを開いたときに用語を表示
 // ==============================
@@ -817,6 +1063,8 @@ window.addEventListener("DOMContentLoaded", () => {
     filterAndSortTerms();
 
     updateLearningProgress();
+
+    updateStudyHistory();
 });
 
 
@@ -852,3 +1100,55 @@ addTermButton.addEventListener(
     "click",
     showAddTermForm
 );
+
+backupButton.addEventListener("click", exportLearningData);
+
+restoreButton.addEventListener("click", () => {
+    backupFile.click();
+});
+
+backupFile.addEventListener("change", () => {
+    const file = backupFile.files[0];
+
+    if (file) {
+        restoreLearningData(file);
+    }
+
+    // 同じファイルをもう一度選べるようにする
+    backupFile.value = "";
+});
+
+reviewModeButton.addEventListener("click", () => {
+    reviewModeEnabled = !reviewModeEnabled;
+
+    reviewModeButton.textContent = reviewModeEnabled
+        ? "復習モード：ON"
+        : "復習モード：OFF";
+
+    reviewModeButton.classList.toggle(
+        "review-active",
+        reviewModeEnabled
+    );
+
+    filterAndSortTerms();
+});
+
+recordStudyButton.addEventListener("click", () => {
+    const today = getLocalDateString();
+
+    if (studyHistory.includes(today)) {
+        studyRecordMessage.textContent = "今日の学習はすでに記録されています。";
+        return;
+    }
+
+    studyHistory.push(today);
+    studyHistory.sort();
+
+    localStorage.setItem(
+        "securityStudyHistory",
+        JSON.stringify(studyHistory)
+    );
+
+    studyRecordMessage.textContent = "今日の学習を記録しました！";
+    updateStudyHistory();
+});
